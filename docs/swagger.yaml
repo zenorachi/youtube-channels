@@ -1,0 +1,108 @@
+definitions:
+  apiutils.ErrorResponse:
+    properties:
+      detail:
+        type: string
+    type: object
+  v1handlers.getChannelsResp:
+    properties:
+      id:
+        type: string
+      subscriptions:
+        type: integer
+      title:
+        type: string
+      topic:
+        type: string
+    type: object
+  v1handlers.insertChannelsReq:
+    properties:
+      language:
+        type: string
+      max_results:
+        type: integer
+      topic:
+        type: string
+    required:
+    - max_results
+    - topic
+    type: object
+info:
+  contact: {}
+paths:
+  /api/v1/channels:
+    get:
+      parameters:
+      - description: channel topic
+        in: query
+        name: topic
+        required: true
+        type: string
+      - description: channels count
+        in: query
+        name: max_results
+        required: true
+        type: integer
+      - description: channels language
+        in: query
+        name: language
+        type: string
+      - description: csv filename (if want to save results to csv)
+        in: query
+        name: filename
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/v1handlers.getChannelsResp'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/apiutils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/apiutils.ErrorResponse'
+      summary: Get YouTube channels
+      tags:
+      - v1
+      - channels
+    post:
+      parameters:
+      - description: data for searching channels to insert
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/v1handlers.insertChannelsReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/apiutils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/apiutils.ErrorResponse'
+      summary: Insert YouTube channels to database
+      tags:
+      - v1
+      - channels
+  /healthcheck:
+    get:
+      responses:
+        "200":
+          description: OK
+      summary: Healthcheck route
+      tags:
+      - default
+swagger: "2.0"
