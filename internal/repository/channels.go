@@ -24,6 +24,11 @@ func NewChannelRepository(db *sqlx.DB) IChannelRepository {
 const insertYTChannelQuery = `
 	INSERT INTO yt_channels (channel_id, topic, title, subscriptions)
 	VALUES ($1, $2, $3, $4)
+	ON CONFLICT (channel_id) DO UPDATE
+	SET topic = excluded.topic,
+	    title = excluded.title,
+	    subscriptions = excluded.subscriptions,
+		updated_at = NOW()
 `
 
 func (c *channelRepository) InsertYTChannel(ctx context.Context, id, name, topic string, subscriptions uint64) error {
